@@ -1,2 +1,2 @@
-# k_red_teaming
+# Red teaming notes
 Script &amp; Notes for red teams operations
