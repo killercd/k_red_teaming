@@ -4,7 +4,9 @@ Script &amp; Notes for red teams operations
 
 # enumeration
 ping ip
+
 whois ip
+
 tracert ip
 
 # database
