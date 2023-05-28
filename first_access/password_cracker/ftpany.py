@@ -1,34 +1,38 @@
+#!/usr/bin/python3
 import fire
 import subprocess
 
 
 
-def display_error(error):
+def display_error(output):
     print("[-] Something was wrong")
-    print("Err {}".format(error.decode()))
+    print("Err {}".format(output.stderr))
     exit(1)
 
         
-def scan(target, ping=False):
+def scan(target, ping=False, verbose=False):
     
     try:
         if ping:
-            process = subprocess.Popen(["nmap", "-sT","-T4", "-p","21", "--open", target], stdout=subprocess.PIPE)
+            output = subprocess.run("nmap -sT -T4 -p 21 -oG - --open {}".format(target), capture_output=True, shell=True, text=True)
         else:
-            process = subprocess.Popen(["nmap", "-P0", "-sT","-T4", "-p","21", "--open", target], stdout=subprocess.PIPE)
+            output = subprocess.run("nmap -P0 -sT -T4 -p 21 -oG - --open {}".format(target), capture_output=True, shell=True, text=True)
+        
+        if output.stderr:
+            display_error(output)
 
-        output, error = process.communicate()
-        if error:
-            display_error(error)
-    
-        lines = output.decode().splitlines()
+        
+        lines = output.stdout.splitlines()
         for line in lines:
             if "open" in line and "ftp" in line:
-                hprocess = subprocess.Popen(["hydra", "-l","anonymous","-p","anonymou@box.com","ftp://{}".format(target)], stdout=subprocess.PIPE)
-                output, error = hprocess.communicate()
-                if error:
-                    display_error(error)
-                h_lines = output.decode().splitlines()
+                ip = line.split(" ")[1]
+                if verbose:
+                    print("Ftp service found {}".format(ip))
+                hprocess = subprocess.run("hydra -l anonymous -p anonymou@box.com ftp://{}".format(ip), capture_output=True, shell=True, text=True)
+                if hprocess.stderr:
+                    display_error(hprocess)
+                
+                h_lines = output.stdout.splitlines()
                 for hline in h_lines:
                     if "anonymous" in hline and "found" in hline:
                         print("{} ANONYMOUS FOUND".format(target))

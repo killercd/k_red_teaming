@@ -1,12 +1,18 @@
 # Red teaming notes
 Script &amp; Notes for red teams operations
 
+# load local scripts aliases
+source install.sh
+
+# ftp anonymous scanner
+ftpany 1.1.1.1
+
+# ftp anonymous scanner with ping check
+ftpany 1.1.1.1 --ping=True  
 
 # enumeration
 ping ip
-
 whois ip
-
 tracert ip
 
 # database
@@ -25,4 +31,6 @@ hydra -L USER.TXT -P PASS.TXT 1.1.1.1 ssh
 
 # hydra pwd spray attack
 hydra -L users.txt -P passwords.txt 192.168.0.1 ssh -u
+
+
 
